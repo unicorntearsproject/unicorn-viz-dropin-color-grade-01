@@ -39,37 +39,49 @@ class LutGrade:
 
 
 # Built-in procedural looks — always available, no asset files required.
+# Built-in procedural looks.  Coefficients are deliberately bold — these are
+# stage/club grades meant to read strongly over busy visuals, not subtle
+# colour-correction.  ``intensity`` still mixes them back toward source.
 BUILTIN_GRADES: tuple[ProceduralGrade, ...] = (
     ProceduralGrade('Neutral'),
     ProceduralGrade(
-        'Teal & Orange', temp=0.18, tint=-0.04,
-        lift=(0.0, 0.0, 0.02), gain=(1.06, 1.0, 0.95),
-        saturation=1.15, contrast=1.12,
+        'Teal & Orange', temp=0.34, tint=-0.08,
+        lift=(0.0, 0.0, 0.04), gain=(1.16, 1.0, 0.86),
+        saturation=1.45, contrast=1.24,
     ),
     ProceduralGrade(
-        'Warm Sunset', temp=0.35, tint=0.05,
-        gain=(1.1, 1.0, 0.88), saturation=1.1, contrast=1.05,
+        'Warm Sunset', temp=0.62, tint=0.10,
+        gain=(1.22, 1.0, 0.76), saturation=1.35, contrast=1.14,
     ),
     ProceduralGrade(
-        'Cool Night', temp=-0.32, tint=-0.02,
-        lift=(0.0, 0.0, 0.03), gain=(0.9, 0.98, 1.12),
-        saturation=0.95, contrast=1.1,
+        'Cool Night', temp=-0.58, tint=-0.05,
+        lift=(0.0, 0.0, 0.06), gain=(0.8, 0.95, 1.28),
+        saturation=1.12, contrast=1.22,
     ),
     ProceduralGrade(
-        'Noir', temp=-0.05, saturation=0.15, contrast=1.3,
-        gamma=(0.95, 0.95, 0.95),
+        'Noir', temp=-0.05, saturation=0.0, contrast=1.55,
+        gamma=(0.9, 0.9, 0.9),
     ),
     ProceduralGrade(
-        'Vibrant Pop', saturation=1.45, contrast=1.18,
-        gain=(1.04, 1.02, 1.04),
+        'Vibrant Pop', saturation=1.9, contrast=1.32,
+        gain=(1.08, 1.04, 1.08),
     ),
     ProceduralGrade(
-        'Faded Film', temp=0.08, lift=(0.05, 0.04, 0.04),
-        gamma=(1.08, 1.06, 1.04), saturation=0.85, contrast=0.92,
+        'Faded Film', temp=0.12, lift=(0.08, 0.06, 0.06),
+        gamma=(1.16, 1.12, 1.08), saturation=0.72, contrast=0.85,
     ),
     ProceduralGrade(
-        'Cyberpunk', temp=-0.12, tint=0.22,
-        gain=(1.08, 0.94, 1.15), saturation=1.3, contrast=1.15,
+        'Cyberpunk', temp=-0.2, tint=0.42,
+        gain=(1.2, 0.86, 1.34), saturation=1.7, contrast=1.26,
+    ),
+    ProceduralGrade(
+        'Neon Rave', temp=-0.28, tint=0.5,
+        lift=(0.02, 0.0, 0.03), gain=(1.25, 0.82, 1.4),
+        saturation=2.0, contrast=1.3,
+    ),
+    ProceduralGrade(
+        'Acid Wash', temp=0.15, tint=-0.45,
+        gain=(1.05, 1.3, 0.8), saturation=1.85, contrast=1.28,
     ),
 )
 

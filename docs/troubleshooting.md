@@ -6,9 +6,10 @@ Last updated: 2026-06-21
 
 ## No visible grade
 
-- Confirm `[color_grade] enabled = true` and `intensity > 0`.
+- Confirm `[color_grade] start_enabled = true` (or toggle on with
+  `Ctrl+Shift+Alt+L`) and `intensity > 0`.
 - The active look may be `Neutral` (the pass is intentionally skipped). Cycle
-  with `Ctrl+Alt+.`.
+  with `Ctrl+Shift+Alt+.`.
 
 ## Frame goes black when grading
 

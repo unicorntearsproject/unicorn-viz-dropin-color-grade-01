@@ -49,11 +49,11 @@ DROPIN_CAPABILITIES = {
 }
 
 HELP_ENTRIES = [
-    ('Color Grade', 'Ctrl+Alt+L', 'Toggle global color grade on/off'),
-    ('Color Grade', 'Ctrl+Alt+.', 'Next color-grade look / LUT'),
-    ('Color Grade', 'Ctrl+Alt+,', 'Previous color-grade look / LUT'),
-    ('Color Grade', 'Ctrl+Alt+;', 'Grade intensity up'),
-    ('Color Grade', "Ctrl+Alt+'", 'Grade intensity down'),
+    ('Color Grade', 'Ctrl+Shift+Alt+L', 'Toggle global color grade on/off'),
+    ('Color Grade', 'Ctrl+Shift+Alt+.', 'Next color-grade look / LUT'),
+    ('Color Grade', 'Ctrl+Shift+Alt+,', 'Previous color-grade look / LUT'),
+    ('Color Grade', 'Ctrl+Shift+Alt+;', 'Grade intensity up'),
+    ('Color Grade', "Ctrl+Shift+Alt+'", 'Grade intensity down'),
 ]
 
 _VERT = """
@@ -95,10 +95,10 @@ in vec2 v_uv;
 out vec4 fragColor;
 
 vec3 applyProcedural(vec3 c) {
-    // Temperature/tint as simple channel pushes.
-    c.r += uTemp * 0.10;
-    c.b -= uTemp * 0.10;
-    c.g += uTint * 0.10;
+    // Temperature/tint as simple channel pushes (punchy — built for the floor).
+    c.r += uTemp * 0.16;
+    c.b -= uTemp * 0.16;
+    c.g += uTint * 0.16;
     // Lift / gamma / gain (ASC-CDL-ish ordering).
     c = c * uGain + uLift;
     c = pow(max(c, 0.0), 1.0 / max(uGamma, vec3(1e-3)));
@@ -141,7 +141,9 @@ class ColorGradeController:
         self._cfg = dict(cfg or {})
         self._vj_api: Any = None
 
-        self.enabled = bool(self._cfg.get('enabled', False))
+        # ``enabled`` gates loading (host); ``start_enabled`` decides whether the
+        # grade is applied at boot.  Defaults on — a passive aesthetic pass.
+        self.enabled = bool(self._cfg.get('start_enabled', True))
         self._intensity = float(np.clip(self._cfg.get('intensity', 0.85), 0.0, 1.0))
         self._rng = np.random.default_rng()
 
@@ -168,9 +170,9 @@ class ColorGradeController:
 
     # ----------------------------------------------------------------- loading
     def _load_luts(self) -> None:
-        raw = self._cfg.get('lut_dir')
-        if not raw:
-            return
+        # Default to the repo-level assets/luts/ so dropping a .cube file in
+        # "just works" with no config.  Any [color_grade] lut_dir overrides it.
+        raw = self._cfg.get('lut_dir') or 'assets/luts'
         lut_dir = Path(raw).expanduser()
         if not lut_dir.is_absolute():
             lut_dir = Path(__file__).resolve().parents[2] / lut_dir
@@ -300,9 +302,13 @@ class ColorGradeController:
 
     # ------------------------------------------------------------- input/teardown
     def handle_key(self, sym: int, mod: int) -> 'str | None | bool':
-        """Handle Ctrl+Alt color-grade hotkeys; return a status string when handled."""
+        """Handle Ctrl+Shift+Alt color-grade hotkeys; return status string when handled."""
         import sdl2  # noqa: PLC0415
-        if not ((mod & sdl2.KMOD_CTRL) and (mod & sdl2.KMOD_ALT)):
+        if not (
+            (mod & sdl2.KMOD_CTRL)
+            and (mod & sdl2.KMOD_ALT)
+            and (mod & sdl2.KMOD_SHIFT)
+        ):
             return False
         if sym == sdl2.SDLK_l:
             on = self.toggle()

@@ -18,9 +18,9 @@ persistent pass in the global post-FX chain.
 
 ## Live operation
 
-- `Ctrl+Alt+L` — toggle the grade on/off.
-- `Ctrl+Alt+.` / `Ctrl+Alt+,` — cycle looks/LUTs forward/back.
-- `Ctrl+Alt+;` / `Ctrl+Alt+'` — intensity up/down.
+- `Ctrl+Shift+Alt+L` — toggle the grade on/off.
+- `Ctrl+Shift+Alt+.` / `Ctrl+Shift+Alt+,` — cycle looks/LUTs forward/back.
+- `Ctrl+Shift+Alt+;` / `Ctrl+Shift+Alt+'` — intensity up/down.
 
 The pass is skipped (no GPU cost) when disabled, when intensity is 0, or when
 the active look is `Neutral`.

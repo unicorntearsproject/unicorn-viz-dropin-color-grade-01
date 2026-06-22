@@ -11,24 +11,27 @@ Hotkeys auto-register into the `H` help overlay via `HELP_ENTRIES`:
 
 | Key | Action |
 | --- | --- |
-| `Ctrl+Alt+L` | Toggle global color grade on/off |
-| `Ctrl+Alt+.` | Next look / LUT |
-| `Ctrl+Alt+,` | Previous look / LUT |
-| `Ctrl+Alt+;` | Intensity up |
-| `Ctrl+Alt+'` | Intensity down |
+| `Ctrl+Shift+Alt+L` | Toggle global color grade on/off |
+| `Ctrl+Shift+Alt+.` | Next look / LUT |
+| `Ctrl+Shift+Alt+,` | Previous look / LUT |
+| `Ctrl+Shift+Alt+;` | Intensity up |
+| `Ctrl+Shift+Alt+'` | Intensity down |
 
 ## Configuration
 
 ```toml
 [color_grade]
-enabled = true
+enabled = true            # load the drop-in (default true)
+start_enabled = true      # apply the grade at boot (default true; passive pass)
 intensity = 0.85          # 0–1 blend against the ungraded frame
 default_grade = "random"  # built-in look name, LUT stem, or "random"
-lut_dir = "assets/luts"   # optional dir of Adobe .cube 3D LUTs
+lut_dir = "assets/luts"   # dir of Adobe .cube 3D LUTs (this is the default)
 ```
 
 Built-in looks: Neutral, Teal & Orange, Warm Sunset, Cool Night, Noir,
-Vibrant Pop, Faded Film, Cyberpunk. Drop `.cube` files into `lut_dir` to add
+Vibrant Pop, Faded Film, Cyberpunk, Neon Rave, Acid Wash. The looks are bold by
+design (stage/club grades over busy visuals); lower `intensity` to ease off.
+Drop `.cube` files into `lut_dir` (defaults to the repo `assets/luts/`) to add
 LUT looks; they appear in the cycle after the built-ins.
 
 When `default_grade = "random"` (or unset) the pass starts on a random
@@ -49,8 +52,9 @@ Core only: `moderngl`, `numpy` (LUT parsing). No new dependencies.
 
 ## Troubleshooting
 
-- **No visible change:** confirm `enabled = true`, `intensity > 0`, and the
-  active look is not `Neutral` (the pass is skipped when neutral).
+- **No visible change:** confirm `start_enabled = true` (or toggle on with
+  `Ctrl+Shift+Alt+L`), `intensity > 0`, and the active look is not `Neutral`
+  (the pass is skipped when neutral).
 - **LUT not appearing:** ensure files end in `.cube`, contain `LUT_3D_SIZE`,
   and live in `lut_dir`. 1D `.cube` LUTs are not supported.
 

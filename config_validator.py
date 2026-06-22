@@ -13,8 +13,9 @@ def validate_config(config_data: dict[str, Any]) -> list[str]:
     if not isinstance(section, dict):
         return ['[color_grade] must be a table']
 
-    if 'enabled' in section and not isinstance(section['enabled'], bool):
-        errors.append('[color_grade] enabled must be a boolean')
+    for key in ('enabled', 'start_enabled'):
+        if key in section and not isinstance(section[key], bool):
+            errors.append(f'[color_grade] {key} must be a boolean')
 
     intensity = section.get('intensity')
     if intensity is not None:

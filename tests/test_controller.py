@@ -36,19 +36,19 @@ def _grade(ctx, **cfg):
 
 
 def test_starts_on_random_non_neutral_when_enabled(ctx) -> None:
-    c = _grade(ctx, enabled=True)
+    c = _grade(ctx, start_enabled=True)
     assert c.active_name != 'Neutral'
     c.destroy()
 
 
 def test_default_grade_selection(ctx) -> None:
-    c = _grade(ctx, enabled=True, default_grade='Noir')
+    c = _grade(ctx, start_enabled=True, default_grade='Noir')
     assert c.active_name == 'Noir'
     c.destroy()
 
 
 def test_is_active_respects_enable_and_neutral(ctx) -> None:
-    c = _grade(ctx, enabled=False, default_grade='Noir')
+    c = _grade(ctx, start_enabled=False, default_grade='Noir')
     assert c.is_active() is False
     c.toggle()
     assert c.is_active() is True
@@ -58,7 +58,7 @@ def test_is_active_respects_enable_and_neutral(ctx) -> None:
 
 
 def test_intensity_clamps(ctx) -> None:
-    c = _grade(ctx, enabled=True)
+    c = _grade(ctx, start_enabled=True)
     assert c.set_intensity(5.0) == 1.0
     assert c.set_intensity(-1.0) == 0.0
     assert c.is_active() is False  # intensity 0 disables the pass
@@ -66,7 +66,7 @@ def test_intensity_clamps(ctx) -> None:
 
 
 def test_cycle_wraps(ctx) -> None:
-    c = _grade(ctx, enabled=True, default_grade='Neutral')
+    c = _grade(ctx, start_enabled=True, default_grade='Neutral')
     first = c.active_name
     names = [first]
     for _ in range(len(c._grades) - 1):
@@ -86,7 +86,7 @@ def test_procedural_grade_changes_pixels(ctx) -> None:
     dst = ctx.texture((8, 8), 4)
     df = ctx.framebuffer(color_attachments=[dst])
 
-    c = _grade(ctx, enabled=True, default_grade='Vibrant Pop', intensity=1.0)
+    c = _grade(ctx, start_enabled=True, default_grade='Vibrant Pop', intensity=1.0)
     assert c.apply(src, df, 0.016, 0.0, 0.0, 0.0, 0.0) is True
     px = np.frombuffer(df.read(components=4), dtype=np.uint8).reshape(8, 8, 4)[0, 0]
     # Vibrant Pop boosts saturation/contrast: result differs from the source
