@@ -227,6 +227,23 @@ class ColorGradeController:
         self._intensity = float(np.clip(value, 0.0, 1.0))
         return self._intensity
 
+    # -- Configuration-editor convention -------------------------------------
+    # Declares this controller's tunable settings so the core config editor can
+    # list, adjust, and persist them without hard-coding drop-in knowledge.
+    CONFIG_EDITOR_CATEGORY = 'Visuals'
+    CONFIG_EDITOR_KEY = 'color_grade'
+
+    def config_editor_settings(self) -> list[dict[str, float | str]]:
+        """Return tunable settings as [{'name','value','min','max'}]."""
+        return [
+            {'name': 'intensity', 'value': float(self._intensity), 'min': 0.0, 'max': 1.0},
+        ]
+
+    def set_config_setting(self, name: str, value: float) -> None:
+        """Apply a config-editor setting by name (live)."""
+        if name == 'intensity':
+            self.set_intensity(value)
+
     def toggle(self) -> bool:
         self.enabled = not self.enabled
         return self.enabled
