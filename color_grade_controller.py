@@ -208,6 +208,18 @@ class ColorGradeController:
     # ------------------------------------------------------------- public API
     def set_vj_api(self, api: Any) -> None:
         self._vj_api = api
+        try:
+            api.register_midi_actions('Color Grade', [
+                ('color_grade_toggle', 'Toggle color grade'),
+                ('color_grade_next',   'Next color grade'),
+                ('color_grade_prev',   'Previous color grade'),
+            ])
+            api.register_midi_action_handler('color_grade_toggle', self.toggle)
+            api.register_midi_action_handler('color_grade_next',   self.next_grade)
+            api.register_midi_action_handler('color_grade_prev',   self.prev_grade)
+        except Exception as exc:
+            import logging  # noqa: PLC0415
+            logging.getLogger(__name__).debug('color-grade-01: MIDI registration failed: %s', exc)
 
     def is_active(self) -> bool:
         """True when the pass should run (enabled, has visible effect)."""
