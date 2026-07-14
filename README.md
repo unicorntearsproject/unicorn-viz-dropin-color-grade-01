@@ -1,5 +1,8 @@
 # color-grade-01 — Global Color Grade / LUT Post Pass
 
+**Version 0.8.0**
+
+
 A single persistent post-process pass that sits in the global post-FX chain
 (after postfx-01) and applies a colour grade to the whole frame — either a
 built-in procedural "look" or a 3D LUT loaded from an Adobe `.cube` file —
@@ -59,3 +62,7 @@ Core only: `moderngl`, `numpy` (LUT parsing). No new dependencies.
   and live in `lut_dir`. 1D `.cube` LUTs are not supported.
 
 See `docs/` for operations, configuration, integration, and troubleshooting.
+
+## Changelog
+
+- **0.8.0** — initial versioned release.
