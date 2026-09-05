@@ -94,3 +94,67 @@ def test_procedural_grade_changes_pixels(ctx) -> None:
     assert tuple(int(v) for v in px[:3]) != (128, 64, 191)
     assert int(px[0]) + int(px[1]) + int(px[2]) > 0
     c.destroy()
+
+
+# ------------------------------------------------------------ control room
+
+class _FakeVJApi:
+    def __init__(self) -> None:
+        self.panels: dict[str, object] = {}
+
+    def register_midi_actions(self, section, actions) -> None:
+        pass
+
+    def register_midi_action_handler(self, action, fn) -> None:
+        pass
+
+    def register_operator_panel(self, panel) -> None:
+        self.panels[panel.name] = panel
+
+    def unregister_operator_panel(self, name: str) -> bool:
+        return self.panels.pop(name, None) is not None
+
+
+def test_set_vj_api_registers_the_panel_on_the_fx_page(ctx) -> None:
+    c = _grade(ctx)
+    api = _FakeVJApi()
+    c.set_vj_api(api)
+    panel = api.panels['color_grade']
+    assert panel.title == 'Color Grade' and panel.page == 'fx' and panel.size == 'small'
+    assert panel.content == c._operator_panel_content
+    assert panel.on_action == c._operator_panel_action
+    assert set(panel.tooltips) == {'toggle', 'prev', 'next', 'int_down', 'int_up'}
+    c.destroy()
+
+
+def test_panel_content_mirrors_state(ctx) -> None:
+    c = _grade(ctx, start_enabled=True, default_grade='Noir')
+    c.set_intensity(0.6)
+    content = c._operator_panel_content()
+    assert content.status == 'ON'
+    assert content.rows[0].label == 'Look' and content.rows[0].value == 'Noir'
+    assert content.meters[0].value == pytest.approx(0.6)
+    assert content.buttons[0].active is True
+    c.destroy()
+
+
+def test_panel_actions_match_the_hotkeys(ctx) -> None:
+    c = _grade(ctx, start_enabled=False)
+    before = c.enabled
+    msg = c._operator_panel_action('toggle', None)
+    assert c.enabled != before
+    assert msg == f'Color grade {"on" if c.enabled else "off"} ({c.active_name})'
+    assert c._operator_panel_action('next', None) == f'Grade: {c.active_name}'
+    assert c._operator_panel_action('prev', None) == f'Grade: {c.active_name}'
+    up = c._operator_panel_action('int_up', None)
+    assert up == f'Grade intensity {c.intensity:.2f}'
+    assert c._operator_panel_action('nope', None) is None
+    c.destroy()
+
+
+def test_destroy_unregisters_the_panel(ctx) -> None:
+    c = _grade(ctx)
+    api = _FakeVJApi()
+    c.set_vj_api(api)
+    c.destroy()
+    assert 'color_grade' not in api.panels

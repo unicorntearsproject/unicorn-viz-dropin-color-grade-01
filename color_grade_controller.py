@@ -15,7 +15,7 @@ a GL context.
 """
 from __future__ import annotations
 
-__version__ = '0.8.0'
+__version__ = '0.9.0'
 
 import importlib.util
 import logging
@@ -222,6 +222,25 @@ class ColorGradeController:
         except Exception as exc:
             import logging  # noqa: PLC0415
             logging.getLogger(__name__).debug('color-grade-01: MIDI registration failed: %s', exc)
+        # Control Room panel (docs/planning/control-room-drop-in-integration-
+        # plan-2026-09-05.md, P1); guarded so an older core just gets no panel.
+        register = getattr(api, 'register_operator_panel', None)
+        if callable(register):
+            try:
+                from unicornviz.operator_panels import OperatorPanel  # noqa: PLC0415
+                register(OperatorPanel(
+                    name='color_grade',
+                    title='Color Grade',
+                    page='fx',
+                    priority=120,
+                    size='small',
+                    content=self._operator_panel_content,
+                    on_action=self._operator_panel_action,
+                    tooltips={'toggle': 'Toggle the global color grade / LUT pass', 'prev': 'Previous look / LUT', 'next': 'Next look / LUT', 'int_down': 'Grade intensity down', 'int_up': 'Grade intensity up'},
+                ))
+            except Exception as exc:
+                import logging  # noqa: PLC0415
+                logging.getLogger(__name__).debug('color-grade-01: operator panel registration failed: %s', exc)
 
     def is_active(self) -> bool:
         """True when the pass should run (enabled, has visible effect)."""
@@ -257,6 +276,38 @@ class ColorGradeController:
         """Apply a config-editor setting by name (live)."""
         if name == 'intensity':
             self.set_intensity(value)
+
+    def _operator_panel_content(self) -> Any:
+        """Control Room panel state -- CR render thread; property reads only."""
+        from unicornviz.operator_panels import PanelButton, PanelContent, PanelMeter, PanelRow  # noqa: PLC0415
+        on = bool(self.enabled)
+        return PanelContent(
+            status='ON' if on else 'OFF',
+            rows=(PanelRow('Look', self.active_name, emphasis='accent' if self.is_active() else ''),),
+            meters=(PanelMeter('Intensity', float(self._intensity), f'{float(self._intensity):.2f}'),),
+            buttons=(
+                PanelButton('toggle', 'TOGGLE', active=on),
+                PanelButton('prev', 'PREV'),
+                PanelButton('next', 'NEXT'),
+                PanelButton('int_down', '-'),
+                PanelButton('int_up', '+'),
+            ),
+        )
+
+    def _operator_panel_action(self, action: str, _payload: Any) -> str | None:
+        """Control Room buttons -> the same verbs and flash text as the hotkeys."""
+        if action == 'toggle':
+            on = self.toggle()
+            return f'Color grade {"on" if on else "off"} ({self.active_name})'
+        if action == 'next':
+            return f'Grade: {self.next_grade()}'
+        if action == 'prev':
+            return f'Grade: {self.prev_grade()}'
+        if action == 'int_up':
+            return f'Grade intensity {self.set_intensity(self._intensity + 0.1):.2f}'
+        if action == 'int_down':
+            return f'Grade intensity {self.set_intensity(self._intensity - 0.1):.2f}'
+        return None
 
     def toggle(self) -> bool:
         self.enabled = not self.enabled
@@ -355,6 +406,13 @@ class ColorGradeController:
         return False
 
     def destroy(self) -> None:
+        # Drop the Control Room panel first (operator_panels.py "Lifecycle").
+        unregister = getattr(getattr(self, '_vj_api', None), 'unregister_operator_panel', None)
+        if callable(unregister):
+            try:
+                unregister('color_grade')
+            except Exception:
+                pass
         try:
             self._vao.release()
             self._vbo.release()

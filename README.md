@@ -1,6 +1,6 @@
 # color-grade-01 — Global Color Grade / LUT Post Pass
 
-**Version 0.8.0**
+**Version 0.9.0**
 
 
 A single persistent post-process pass that sits in the global post-FX chain
@@ -65,4 +65,5 @@ See `docs/` for operations, configuration, integration, and troubleshooting.
 
 ## Changelog
 
+- **0.9.0** — Control Room panel (P1 of `docs/planning/control-room-drop-in-integration-plan-2026-09-05.md`): registered on the shared **FX** page from `set_vj_api()` — active look, intensity meter, TOGGLE / PREV / NEXT / − / + buttons calling the same `toggle()` / `prev_grade()` / `next_grade()` / `set_intensity()` as the `Ctrl+Shift+Alt+L/,/./;/'` hotkeys and flashing the same text. Unregistered in `destroy()`.
 - **0.8.0** — initial versioned release.
