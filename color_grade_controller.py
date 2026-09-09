@@ -15,7 +15,7 @@ a GL context.
 """
 from __future__ import annotations
 
-__version__ = '0.9.0'
+__version__ = '0.10.0'
 
 import importlib.util
 import logging
@@ -144,8 +144,9 @@ class ColorGradeController:
         self._vj_api: Any = None
 
         # ``enabled`` gates loading (host); ``start_enabled`` decides whether the
-        # grade is applied at boot.  Defaults on — a passive aesthetic pass.
-        self.enabled = bool(self._cfg.get('start_enabled', True))
+        # grade is applied at boot.  Defaults OFF (owner decision 2026-09-09: a
+        # fresh install shows the effects ungraded; the look is opt-in).
+        self.enabled = bool(self._cfg.get('start_enabled', False))
         self._intensity = float(np.clip(self._cfg.get('intensity', 0.85), 0.0, 1.0))
         self._rng = np.random.default_rng()
 

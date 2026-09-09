@@ -1,6 +1,6 @@
 # color-grade-01 — Global Color Grade / LUT Post Pass
 
-**Version 0.9.0**
+**Version 0.10.0**
 
 
 A single persistent post-process pass that sits in the global post-FX chain
@@ -25,7 +25,7 @@ Hotkeys auto-register into the `H` help overlay via `HELP_ENTRIES`:
 ```toml
 [color_grade]
 enabled = true            # load the drop-in (default true)
-start_enabled = true      # apply the grade at boot (default true; passive pass)
+start_enabled = false     # apply the grade at boot (default false since 0.10.0)
 intensity = 0.85          # 0–1 blend against the ungraded frame
 default_grade = "random"  # built-in look name, LUT stem, or "random"
 lut_dir = "assets/luts"   # dir of Adobe .cube 3D LUTs (this is the default)
@@ -65,5 +65,7 @@ See `docs/` for operations, configuration, integration, and troubleshooting.
 
 ## Changelog
 
+- **0.10.0** — `start_enabled` now defaults to **false**: a fresh install
+  shows effects ungraded; the grade is opt-in (config or Ctrl+Shift+Alt+L).
 - **0.9.0** — Control Room panel (P1 of `docs/planning/control-room-drop-in-integration-plan-2026-09-05.md`): registered on the shared **FX** page from `set_vj_api()` — active look, intensity meter, TOGGLE / PREV / NEXT / − / + buttons calling the same `toggle()` / `prev_grade()` / `next_grade()` / `set_intensity()` as the `Ctrl+Shift+Alt+L/,/./;/'` hotkeys and flashing the same text. Unregistered in `destroy()`.
 - **0.8.0** — initial versioned release.

@@ -9,7 +9,7 @@ Keys live under `[color_grade]` in `config.toml`. All have safe defaults.
 | Key | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `enabled` | bool | `true` | Load the drop-in at all |
-| `start_enabled` | bool | `true` | Apply the grade at boot (passive pass) |
+| `start_enabled` | bool | `false` | Apply the grade at boot; off by default since 0.10.0 (toggle live with Ctrl+Shift+Alt+L) |
 | `intensity` | float | `0.85` | Blend against ungraded frame, `0–1` |
 | `default_grade` | str | `random` | Built-in look name, LUT file stem, or `random` |
 | `lut_dir` | str | `assets/luts` | Directory of Adobe `.cube` 3D LUTs (relative to app root) |
